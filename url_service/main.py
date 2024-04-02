@@ -6,6 +6,7 @@ from redis.asyncio import Redis
 
 from src.db import redis
 from src.core.config import settings
+from src.api.v1 import urls
 
 
 @asynccontextmanager
@@ -27,6 +28,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.include_router(
+    urls.router,
+    tags=["urls"],
+)
 
 if __name__ == "__main__":
     uvicorn.run(
