@@ -22,20 +22,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title='Url shortener',
-    docs_url="/api/openapi",
-    openapi_url="/api/openapi.json",
+    docs_url='/api/openapi',
+    openapi_url='/api/openapi.json',
     lifespan=lifespan,
 )
 
 app.include_router(
-    urls.router,
-    prefix="/shortener",
-    tags=["shortener"],
+    urls.router, prefix='/shortener', tags=['shortener'],
 )
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
+        'main:app', host='0.0.0.0', port=8000,
     )

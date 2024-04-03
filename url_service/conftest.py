@@ -6,22 +6,25 @@ import pytest_asyncio
 from fastapi.testclient import TestClient
 from main import app
 from sqlalchemy import create_engine, select, text
-from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
-                                    create_async_engine)
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    create_async_engine,
+)
 from sqlalchemy.orm import sessionmaker
 from src.core.config import settings
 from src.db.postgres import Base
 from src.models.url_models import URL
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def event_loop(request):
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest_asyncio.fixture(scope='session')
 async def async_engine() -> AsyncEngine:
     async_engine = create_async_engine(settings.dsn, echo=False, future=True)
     yield async_engine
@@ -43,7 +46,14 @@ async def async_session(async_engine: AsyncEngine):
 
     async with async_engine.begin() as conn:
         await conn.execute(
-            text("TRUNCATE {} CASCADE;".format(",".join(table.name for table in reversed(Base.metadata.sorted_tables))))
+            text(
+                'TRUNCATE {} CASCADE;'.format(
+                    ','.join(
+                        table.name
+                        for table in reversed(Base.metadata.sorted_tables)
+                    )
+                )
+            )
         )
 
 
@@ -58,7 +68,7 @@ async def sample_url(async_session: AsyncSession) -> URL:
     url = URL(
         original_url='original_url',
         short_url='short_url',
-        timestamps=[datetime.now(tz=None), datetime.now(tz=None)]
+        timestamps=[datetime.now(tz=None), datetime.now(tz=None)],
     )
     async_session.add(url)
     await async_session.commit()

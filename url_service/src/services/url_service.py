@@ -14,16 +14,18 @@ from src.services.postgres_service import PostgresService
 from src.services.pydantic_base import BaseService
 from src.services.redis_service import RedisCacheService, get_redis_service
 
-M = TypeVar("M", bound=BaseModel)
+M = TypeVar('M', bound=BaseModel)
 
 
 class URLService(BaseService):
     """Сервис для управления URL"""
-    def __init__(self,
-                 model_schema_class: type[M],
-                 postgres_service: PostgresService,
-                 cache: RedisCacheService,
-                 ):
+
+    def __init__(
+        self,
+        model_schema_class: type[M],
+        postgres_service: PostgresService,
+        cache: RedisCacheService,
+    ):
         self.model_schema_class = model_schema_class
         self.postgres_service = postgres_service
         self.cache = cache
@@ -33,8 +35,7 @@ class URLService(BaseService):
         short_url = self._shorten_url(model_schema.original_url)
 
         schema = URLCreateFull(
-            original_url=model_schema.original_url,
-            short_url=short_url,
+            original_url=model_schema.original_url, short_url=short_url,
         )
         db_model = await self.postgres_service.create(schema)
         return self.model_schema_class.model_validate(db_model)
@@ -44,11 +45,15 @@ class URLService(BaseService):
         db_model = await self.cache.get_from_cache(short_url)
 
         if not db_model:
-            db_model = await self.postgres_service.get_by_field('short_url', short_url)
+            db_model = await self.postgres_service.get_by_field(
+                'short_url', short_url
+            )
             if not db_model:
                 return None
             schema = self.model_schema_class.model_validate(db_model)
-            await self.cache.put_to_cache(db_model.short_url, schema.model_dump_json())
+            await self.cache.put_to_cache(
+                db_model.short_url, schema.model_dump_json()
+            )
 
         schema = self.model_schema_class.model_validate(db_model)
         await self._add_timestamp_to_queue(schema)
@@ -61,18 +66,21 @@ class URLService(BaseService):
 
     async def _add_timestamp_to_queue(self, value: M):
         timestamp = URLCashTimestamp(
-            id=value.id,
-            timestamp=datetime.now(tz=None),
+            id=value.id, timestamp=datetime.now(tz=None),
         )
-        await self.cache.add_to_queue(queue_name='timestamps', data=timestamp.model_dump_json())
+        await self.cache.add_to_queue(
+            queue_name='timestamps', data=timestamp.model_dump_json()
+        )
 
 
 def get_url_service(
-        pg_session: AsyncSession = Depends(get_session),
-        redis: RedisCacheService = Depends(get_redis_service),
-        ) -> URLService:
+    pg_session: AsyncSession = Depends(get_session),
+    redis: RedisCacheService = Depends(get_redis_service),
+) -> URLService:
     return URLService(
         model_schema_class=URLSchema,
-        postgres_service=PostgresService(session=pg_session, model_class=URLModel),
+        postgres_service=PostgresService(
+            session=pg_session, model_class=URLModel
+        ),
         cache=redis,
     )

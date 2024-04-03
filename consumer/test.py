@@ -16,7 +16,7 @@ Base = declarative_base()
 
 
 class URL(Base):
-    __tablename__ = "urls"
+    __tablename__ = 'urls'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     original_url = Column(String)
@@ -25,12 +25,7 @@ class URL(Base):
 
 
 async def consumer(queue_name, async_session):
-    redis = Redis(
-        host='localhost',
-        port=6379,
-        db=0,
-        decode_responses=True,
-        )
+    redis = Redis(host='localhost', port=6379, db=0, decode_responses=True,)
     _, data = await redis.brpop(queue_name)
     print(f'Consumed: {data}')
 
@@ -49,7 +44,9 @@ async def consumer(queue_name, async_session):
             await session.commit()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     async_engine = create_async_engine(settings.dsn, echo=True, future=True)
-    async_session = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
+    async_session = sessionmaker(
+        async_engine, class_=AsyncSession, expire_on_commit=False
+    )
     asyncio.run(consumer('timestamps', async_session))

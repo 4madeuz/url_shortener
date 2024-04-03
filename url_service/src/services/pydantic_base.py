@@ -4,16 +4,14 @@ from uuid import UUID
 from pydantic import BaseModel
 from src.services.postgres_service import PostgresService
 
-M = TypeVar("M", bound=BaseModel)
+M = TypeVar('M', bound=BaseModel)
 
 
 class BaseService:
     """Base service class for working at the business logic and validation level using Pydantic."""
 
     def __init__(
-        self,
-        model_schema_class: Type[M],
-        postgres_service: PostgresService,
+        self, model_schema_class: Type[M], postgres_service: PostgresService,
     ):
         self.model_schema_class = model_schema_class
         self.postgres_service = postgres_service
@@ -22,7 +20,9 @@ class BaseService:
         """Retrieve multiple models."""
         db_models = await self.postgres_service.get_all()
 
-        return [self.model_schema_class.model_validate(model) for model in db_models]
+        return [
+            self.model_schema_class.model_validate(model) for model in db_models
+        ]
 
     async def get_model_by_id(self, model_id: UUID) -> M | None:
         """Retrieve a model by identifier."""

@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.postgres import Base
 from src.services.abstract import AbstractDBService
 
-M = TypeVar("M", bound=Base)
+M = TypeVar('M', bound=Base)
 
 
 class PostgresService(AbstractDBService):
@@ -32,7 +32,9 @@ class PostgresService(AbstractDBService):
     async def get_by_field(self, field: str, value: any) -> M | None:
         """Получить объект по значению поля"""
         async with self.session.begin():
-            query = select(self.model_class).where(getattr(self.model_class, field) == value)
+            query = select(self.model_class).where(
+                getattr(self.model_class, field) == value
+            )
             model = await self.session.execute(query)
             return model.scalars().first()
 

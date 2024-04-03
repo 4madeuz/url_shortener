@@ -15,7 +15,7 @@ async def consumer(queue_name, exit_event, async_session):
         port=settings.redis_port,
         db=0,
         decode_responses=True,
-        )
+    )
 
     try:
         while not exit_event.is_set():
@@ -37,7 +37,7 @@ async def consumer(queue_name, exit_event, async_session):
                     await session.commit()
 
     except asyncio.CancelledError:
-        print("Consumer cancelled")
+        print('Consumer cancelled')
     finally:
         await redis.close()
 
@@ -47,11 +47,16 @@ async def main():
     exit_event = asyncio.Event()
 
     async_engine = create_async_engine(settings.dsn, echo=True, future=True)
-    async_session = sessionmaker(async_engine, class_=AsyncSession, expire_on_commit=False)
+    async_session = sessionmaker(
+        async_engine, class_=AsyncSession, expire_on_commit=False
+    )
 
-    consumer_task = asyncio.create_task(consumer(queue_name, exit_event, async_session))
+    consumer_task = asyncio.create_task(
+        consumer(queue_name, exit_event, async_session)
+    )
 
     await asyncio.gather(consumer_task, return_exceptions=True)
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     asyncio.run(main())

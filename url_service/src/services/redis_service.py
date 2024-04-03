@@ -13,7 +13,9 @@ class RedisCacheService(AbstractCacheService):
     def __init__(self, redis: Redis):
         self.redis = redis
 
-    async def get_from_cache(self, cache_key: str) -> Union[str, list[str]] | None:
+    async def get_from_cache(
+        self, cache_key: str
+    ) -> Union[str, list[str]] | None:
         """Retrieve a model or list of models from the Redis cache."""
         data = await self.redis.get(cache_key)
         if not data:
