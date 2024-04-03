@@ -4,12 +4,11 @@ from datetime import datetime
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
+from main import app
 from sqlalchemy import create_engine, select, text
 from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
                                     create_async_engine)
 from sqlalchemy.orm import sessionmaker
-
-from main import app
 from src.core.config import settings
 from src.db.postgres import Base
 from src.models.url_models import URL

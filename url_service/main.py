@@ -3,10 +3,9 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import Depends, FastAPI
 from redis.asyncio import Redis
-
-from src.db import redis
-from src.core.config import settings
 from src.api.v1 import urls
+from src.core.config import settings
+from src.db import redis
 
 
 @asynccontextmanager

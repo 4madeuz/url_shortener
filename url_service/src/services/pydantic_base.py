@@ -2,7 +2,6 @@ from typing import Type, TypeVar
 from uuid import UUID
 
 from pydantic import BaseModel
-
 from src.services.postgres_service import PostgresService
 
 M = TypeVar("M", bound=BaseModel)

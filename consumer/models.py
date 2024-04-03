@@ -1,8 +1,8 @@
 import uuid
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, ARRAY, DateTime
+from sqlalchemy import ARRAY, Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 

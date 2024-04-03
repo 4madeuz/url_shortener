@@ -2,16 +2,15 @@ import asyncio
 import json
 import uuid
 from datetime import datetime
-from redis.asyncio import Redis
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, ARRAY, DateTime
-from sqlalchemy.dialects.postgresql import UUID
 
 from config import settings
+from redis.asyncio import Redis
 from schemas import URLCashTimestamp
-
+from sqlalchemy import ARRAY, Column, DateTime, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 

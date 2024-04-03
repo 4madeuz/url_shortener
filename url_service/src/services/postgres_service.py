@@ -1,11 +1,11 @@
-from uuid import UUID
 from typing import Type, TypeVar
-from src.services.abstract import AbstractDBService
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import delete, select, update
-from pydantic import BaseModel
+from uuid import UUID
 
+from pydantic import BaseModel
+from sqlalchemy import delete, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.postgres import Base
+from src.services.abstract import AbstractDBService
 
 M = TypeVar("M", bound=Base)
 

@@ -1,8 +1,6 @@
 import pytest
 from httpx import AsyncClient
-
 from src.models.url_models import URL
-
 
 pytestmark = pytest.mark.asyncio
 

@@ -1,11 +1,10 @@
 import json
 from typing import Union
 
-from redis.asyncio import Redis
 from fastapi import Depends
-
-from src.services.abstract import AbstractCacheService
+from redis.asyncio import Redis
 from src.db.redis import get_redis
+from src.services.abstract import AbstractCacheService
 
 
 class RedisCacheService(AbstractCacheService):

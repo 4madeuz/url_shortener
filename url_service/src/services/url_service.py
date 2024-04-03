@@ -1,20 +1,18 @@
 import hashlib
-
 from datetime import datetime
-from typing import Any, Coroutine
-from typing import Type, TypeVar
+from typing import Any, Coroutine, Type, TypeVar
 from uuid import UUID
 
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
-
+from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.postgres import get_session
 from src.models.url_models import URL as URLModel
-from src.schemas.url_schemas import URL as URLSchema, URLCreateFull, URLCashTimestamp
-from src.services.pydantic_base import BaseService
+from src.schemas.url_schemas import URL as URLSchema
+from src.schemas.url_schemas import URLCashTimestamp, URLCreateFull
 from src.services.postgres_service import PostgresService
-from src.services.redis_service import get_redis_service, RedisCacheService
+from src.services.pydantic_base import BaseService
+from src.services.redis_service import RedisCacheService, get_redis_service
 
 M = TypeVar("M", bound=BaseModel)
 

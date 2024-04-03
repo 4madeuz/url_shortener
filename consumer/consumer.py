@@ -1,13 +1,12 @@
 import asyncio
 import json
 
-from redis.asyncio import Redis
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-
 from config import settings
-from schemas import URLCashTimestamp
 from models import URL
+from redis.asyncio import Redis
+from schemas import URLCashTimestamp
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
 
 
 async def consumer(queue_name, exit_event, async_session):
