@@ -12,8 +12,8 @@ from src.api.v1 import urls
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     redis.redis = Redis(
-        host=settings.auth_redis_host,
-        port=settings.auth_redis_port,
+        host=settings.redis_host,
+        port=settings.redis_port,
         db=0,
         decode_responses=True,
     )
@@ -30,7 +30,8 @@ app = FastAPI(
 
 app.include_router(
     urls.router,
-    tags=["urls"],
+    prefix="/shortener",
+    tags=["shortener"],
 )
 
 if __name__ == "__main__":

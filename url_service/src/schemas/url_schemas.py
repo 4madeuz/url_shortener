@@ -18,3 +18,14 @@ class URL(BaseModel):
 
 class URLCreate(BaseModel):
     original_url: str
+
+
+class URLCreateFull(BaseModel):
+    original_url: str
+    short_url: str
+    timestamps: list[datetime] = []
+
+
+class URLCashTimestamp(BaseModel):
+    id: UUID
+    timestamp: datetime

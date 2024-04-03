@@ -1,22 +1,80 @@
-from functools import lru_cache
+import hashlib
+
+from datetime import datetime
+from typing import Any, Coroutine
+from typing import Type, TypeVar
+from uuid import UUID
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from pydantic import BaseModel
 
 from src.db.postgres import get_session
 from src.models.url_models import URL as URLModel
-from src.schemas.url_schemas import URL as URLSchema
+from src.schemas.url_schemas import URL as URLSchema, URLCreateFull, URLCashTimestamp
 from src.services.pydantic_base import BaseService
 from src.services.postgres_service import PostgresService
+from src.services.redis_service import get_redis_service, RedisCacheService
+
+M = TypeVar("M", bound=BaseModel)
 
 
 class URLService(BaseService):
     """Сервис для управления URL"""
+    def __init__(self,
+                 model_schema_class: type[M],
+                 postgres_service: PostgresService,
+                 cache: RedisCacheService,
+                 ):
+        self.model_schema_class = model_schema_class
+        self.postgres_service = postgres_service
+        self.cache = cache
+
+    async def create_model(self, model_schema: M) -> Coroutine[Any, Any, M]:
+
+        short_url = self._shorten_url(model_schema.original_url)
+
+        schema = URLCreateFull(
+            original_url=model_schema.original_url,
+            short_url=short_url,
+        )
+        db_model = await self.postgres_service.create(schema)
+        return self.model_schema_class.model_validate(db_model)
+
+    async def get_model_by_short_url(self, short_url: str) -> M | None:
+
+        db_model = await self.cache.get_from_cache(short_url)
+
+        if not db_model:
+            db_model = await self.postgres_service.get_by_field('short_url', short_url)
+            if not db_model:
+                return None
+            schema = self.model_schema_class.model_validate(db_model)
+            await self.cache.put_to_cache(db_model.short_url, schema.model_dump_json())
+
+        schema = self.model_schema_class.model_validate(db_model)
+        await self._add_timestamp_to_queue(schema)
+        return schema
+
+    def _shorten_url(self, original_url: str) -> str:
+        hash_object = hashlib.sha256(original_url.encode())
+        short_url = hash_object.hexdigest()[:8]
+        return short_url
+
+    async def _add_timestamp_to_queue(self, value: M):
+        timestamp = URLCashTimestamp(
+            id=value.id,
+            timestamp=datetime.now(tz=None),
+        )
+        await self.cache.add_to_queue(queue_name='timestamps', data=timestamp.model_dump_json())
 
 
-@lru_cache
-def get_url_service(pg_session: AsyncSession = Depends(get_session)) -> URLService:
+def get_url_service(
+        pg_session: AsyncSession = Depends(get_session),
+        redis: RedisCacheService = Depends(get_redis_service),
+        ) -> URLService:
     return URLService(
         model_schema_class=URLSchema,
         postgres_service=PostgresService(session=pg_session, model_class=URLModel),
+        cache=redis,
     )

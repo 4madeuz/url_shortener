@@ -27,9 +27,10 @@ async def create_short_url(
     return role
 
 
-@router.get("{short_url}", response_model=list[URLSchema], status_code=status.HTTP_200_OK)
+@router.get("{short_url}", response_model=URLSchema, status_code=status.HTTP_200_OK)
 async def get_short_url(
+    short_url: str,
     role_service: URLService = Depends(get_url_service),
-) -> list[URLSchema]:
-    roles = await role_service.get_all_models()
-    return roles
+) -> URLSchema:
+    role = await role_service.get_model_by_short_url(short_url)
+    return role
