@@ -22,6 +22,7 @@
 - uvicorn
 - swagger
 - Pytest
+-  авто-форматеры isort + ointdb
 
 
 ## Запуск проекта
