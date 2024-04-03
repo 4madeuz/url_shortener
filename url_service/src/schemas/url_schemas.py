@@ -29,3 +29,8 @@ class URLCreateFull(BaseModel):
 class URLCashTimestamp(BaseModel):
     id: UUID
     timestamp: datetime
+
+
+class URLShort(BaseModel):
+    original_url: str
+    short_url: str

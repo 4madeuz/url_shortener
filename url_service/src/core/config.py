@@ -4,14 +4,7 @@ from pydantic import Field, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ENV_PATH = os.path.join(os.path.dirname(BASE_DIR), ".env")
-
-
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=ENV_PATH, env_file_encoding="utf-8", extra="ignore"
-    )
     # Настройки подключения к БД
     scheme: str = "postgresql+asyncpg"
     postgres_db: str = Field(default="shortener")

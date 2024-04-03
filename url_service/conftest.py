@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 
 import pytest
 import pytest_asyncio
@@ -23,7 +24,7 @@ def event_loop(request):
 
 @pytest_asyncio.fixture(scope="session")
 async def async_engine() -> AsyncEngine:
-    async_engine = create_async_engine(settings.postgres_dsn, echo=False, future=True)
+    async_engine = create_async_engine(settings.dsn, echo=False, future=True)
     yield async_engine
     await async_engine.dispose()
 
@@ -54,13 +55,13 @@ def test_client():
 
 
 @pytest_asyncio.fixture
-async def sample_route(async_session: AsyncSession) -> Route:
+async def sample_url(async_session: AsyncSession) -> URL:
     url = URL(
         original_url='original_url',
         short_url='short_url',
         timestamps=[datetime.now(tz=None), datetime.now(tz=None)]
     )
-    async_session.add(route)
+    async_session.add(url)
     await async_session.commit()
-    await async_session.refresh(route)
-    return route
+    await async_session.refresh(url)
+    return url

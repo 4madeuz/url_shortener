@@ -1,0 +1,33 @@
+version: '3'
+services:
+  pg_database:
+    image: postgres:13-alpine
+    container_name: test_db
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - 5432:${POSTGRES_PORT}
+    networks:
+      - test
+
+  redis_test:
+    image: redis
+    container_name: redis_test
+    networks:
+      - test
+
+  tests:
+    container_name: test_python_service
+    build:
+      context: url_service
+      dockerfile: Dockerfile.tests
+    env_file:
+      - .env.tests
+    networks:
+      - test
+
+networks:
+  test:
+    driver: bridge
