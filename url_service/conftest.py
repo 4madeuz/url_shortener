@@ -25,7 +25,7 @@ def event_loop(request):
 
 
 @pytest_asyncio.fixture(scope='session')
-async def async_engine() -> AsyncEngine:
+async def async_engine() -> AsyncEngine:  # type: ignore
     async_engine = create_async_engine(settings.dsn, echo=False, future=True)
     yield async_engine
     await async_engine.dispose()
@@ -33,7 +33,7 @@ async def async_engine() -> AsyncEngine:
 
 @pytest_asyncio.fixture(scope='function')
 async def async_session(async_engine: AsyncEngine):
-    async_session: type[AsyncEngine] = sessionmaker(
+    async_session: type[AsyncEngine] = sessionmaker(  # type: ignore
         expire_on_commit=False,
         autocommit=False,
         autoflush=False,

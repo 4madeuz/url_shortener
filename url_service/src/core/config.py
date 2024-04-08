@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     cache_expire_in_seconds: int = 60 * 5  # 5 минут
 
     @property
-    def dsn(self) -> PostgresDsn:
+    def dsn(self) -> str:
         return str(
             PostgresDsn.build(
                 scheme=self.scheme,
