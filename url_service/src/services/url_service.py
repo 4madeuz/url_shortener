@@ -4,7 +4,6 @@ from typing import Any, Sequence, TypeVar
 from uuid import UUID
 
 from fastapi import Depends
-from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.postgres import get_session
 from src.models.url_models import URL as URLModel
