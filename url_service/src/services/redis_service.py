@@ -28,13 +28,13 @@ class RedisCacheService(AbstractCacheService):
 
         return deserialized_data
 
-    async def put_to_cache(self, cache_key: str, model: str | list[str]):
+    async def put_to_cache(self, cache_key: str, model: str):
         """Put a model or list of models into the Redis cache."""
         await self.redis.set(cache_key, model, 240)
 
-    async def add_to_queue(self, queue_name: str, data: str | list[str]):
+    async def add_to_queue(self, queue_name: str, data: str):
         """Put a model or list of models into the Redis cache."""
-        await self.redis.lpush(queue_name, data)
+        await self.redis.lpush(queue_name, data)  # type: ignore
 
 
 def get_redis_service(redis: Redis = Depends(get_redis)) -> RedisCacheService:

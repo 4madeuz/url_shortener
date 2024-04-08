@@ -1,6 +1,6 @@
 import hashlib
 from datetime import datetime
-from typing import Any, Coroutine, TypeVar
+from typing import Any, Sequence, TypeVar
 from uuid import UUID
 
 from fastapi import Depends
@@ -13,7 +13,7 @@ from src.schemas.url_schemas import URLCashTimestamp, URLCreateFull
 from src.services.postgres_service import PostgresService
 from src.services.redis_service import RedisCacheService, get_redis_service
 
-M = TypeVar('M', bound=BaseModel)
+M = TypeVar('M', bound=URLSchema)
 
 
 class URLService():
@@ -29,26 +29,26 @@ class URLService():
         self.postgres_service = postgres_service
         self.cache = cache
 
-    async def create_model(self, model_schema: M) -> Coroutine[Any, Any, M]:
+    async def create_model(self, model_schema: M) -> M | None:
 
         short_url = self._shorten_url(model_schema.original_url)
 
         schema = URLCreateFull(
             original_url=model_schema.original_url, short_url=short_url,
         )
-        db_model = await self.postgres_service.create(schema)
+        db_model = await self.postgres_service.create(schema)  # type: ignore
         return db_model
 
     async def get_model_by_id(self, model_id: UUID) -> M | None:
 
-        db_model = await self.postgres_service.get_by_id(model_id)
+        db_model = await self.postgres_service.get_by_id(model_id)  # type: ignore
 
         if not db_model:
             return None
 
         return db_model
 
-    async def get_all_models(self) -> list[M]:
+    async def get_all_models(self) -> Sequence[Any]:
 
         db_models = await self.postgres_service.get_all()
 

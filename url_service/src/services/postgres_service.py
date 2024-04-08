@@ -1,4 +1,4 @@
-from typing import Type, TypeVar
+from typing import Sequence, Type, TypeVar, Any
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -17,7 +17,7 @@ class PostgresService(AbstractDBService):
         self.session = session
         self.model_class = model_class
 
-    async def get_all(self) -> list[M]:
+    async def get_all(self) -> Sequence[Any]:
         """Получить список объектов"""
         async with self.session.begin():
             models = await self.session.execute(select(self.model_class))
@@ -29,7 +29,7 @@ class PostgresService(AbstractDBService):
             model = await self.session.get(self.model_class, model_id)
             return model
 
-    async def get_by_field(self, field: str, value: any) -> M | None:
+    async def get_by_field(self, field: str, value: Any) -> M | None:
         """Получить объект по значению поля"""
         async with self.session.begin():
             query = select(self.model_class).where(
