@@ -5,7 +5,7 @@ import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
 from main import app
-from sqlalchemy import create_engine, select, text
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,

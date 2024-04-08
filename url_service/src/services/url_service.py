@@ -1,6 +1,6 @@
 import hashlib
 from datetime import datetime
-from typing import Any, Coroutine, Type, TypeVar
+from typing import Any, Coroutine, TypeVar
 from uuid import UUID
 
 from fastapi import Depends
