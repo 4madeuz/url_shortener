@@ -11,13 +11,12 @@ from src.models.url_models import URL as URLModel
 from src.schemas.url_schemas import URL as URLSchema
 from src.schemas.url_schemas import URLCashTimestamp, URLCreateFull
 from src.services.postgres_service import PostgresService
-from src.services.pydantic_base import BaseService
 from src.services.redis_service import RedisCacheService, get_redis_service
 
 M = TypeVar('M', bound=BaseModel)
 
 
-class URLService(BaseService):
+class URLService():
     """Сервис для управления URL"""
 
     def __init__(
@@ -38,7 +37,22 @@ class URLService(BaseService):
             original_url=model_schema.original_url, short_url=short_url,
         )
         db_model = await self.postgres_service.create(schema)
-        return self.model_schema_class.model_validate(db_model)
+        return db_model
+
+    async def get_model_by_id(self, model_id: UUID) -> M | None:
+
+        db_model = await self.postgres_service.get_by_id(model_id)
+
+        if not db_model:
+            return None
+
+        return db_model
+
+    async def get_all_models(self) -> list[M]:
+
+        db_models = await self.postgres_service.get_all()
+
+        return db_models
 
     async def get_model_by_short_url(self, short_url: str) -> M | None:
 
@@ -57,7 +71,7 @@ class URLService(BaseService):
 
         schema = self.model_schema_class.model_validate(db_model)
         await self._add_timestamp_to_queue(schema)
-        return schema
+        return db_model
 
     def _shorten_url(self, original_url: str) -> str:
         hash_object = hashlib.sha256(original_url.encode())

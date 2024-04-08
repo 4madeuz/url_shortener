@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from src.schemas.url_schemas import URL as URLSchema
 from src.schemas.url_schemas import URLCreate, URLShort
 from src.services.postgres_service import PostgresService
-from src.services.pydantic_base import BaseService
 from src.services.url_service import URLService, get_url_service
 
 router = APIRouter()
