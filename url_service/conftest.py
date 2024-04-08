@@ -41,7 +41,7 @@ async def async_session(async_engine: AsyncEngine):
         class_=AsyncSession,
     )
 
-    async with async_session() as session:
+    async with async_session() as session:  # type: ignore
         yield session
 
     async with async_engine.begin() as conn:

@@ -1,5 +1,5 @@
 import json
-from typing import Union
+from typing import Any
 
 from fastapi import Depends
 from redis.asyncio import Redis
@@ -15,7 +15,7 @@ class RedisCacheService(AbstractCacheService):
 
     async def get_from_cache(
         self, cache_key: str
-    ) -> Union[str, list[str]] | None:
+    ) -> Any | None:
         """Retrieve a model or list of models from the Redis cache."""
         data = await self.redis.get(cache_key)
         if not data:

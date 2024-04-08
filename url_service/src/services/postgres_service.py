@@ -17,13 +17,13 @@ class PostgresService(AbstractDBService):
         self.session = session
         self.model_class = model_class
 
-    async def get_all(self) -> Sequence[Any]:
+    async def get_all(self) -> Sequence[M] | None:
         """Получить список объектов"""
         async with self.session.begin():
             models = await self.session.execute(select(self.model_class))
             return models.unique().scalars().all()
 
-    async def get_by_id(self, model_id: UUID) -> M | None:
+    async def get_by_id(self, model_id: str) -> M | None:
         """Получить объект по id"""
         async with self.session.begin():
             model = await self.session.get(self.model_class, model_id)

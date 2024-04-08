@@ -1,3 +1,4 @@
+from typing import Sequence
 from fastapi import APIRouter, Depends, status
 from src.schemas.url_schemas import URL as URLSchema
 from src.schemas.url_schemas import URLCreate, URLShort
@@ -9,7 +10,7 @@ router = APIRouter()
 @router.get("", response_model=list[URLSchema], status_code=status.HTTP_200_OK)
 async def get_urls(
     url_service: URLService = Depends(get_url_service),
-) -> list[URLSchema]:
+) -> Sequence[URLSchema]:
     url = await url_service.get_all_models()
     return url
 
