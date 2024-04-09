@@ -23,7 +23,7 @@ class PostgresService(AbstractDBService):
             models = await self.session.execute(select(self.model_class))
             return models.unique().scalars().all()
 
-    async def get_by_id(self, model_id: str) -> M | None:
+    async def get_by_id(self, model_id: UUID) -> M | None:
         """Получить объект по id"""
         async with self.session.begin():
             model = await self.session.get(self.model_class, model_id)

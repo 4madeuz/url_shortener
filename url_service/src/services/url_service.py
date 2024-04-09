@@ -1,8 +1,10 @@
 import hashlib
 from datetime import datetime
 from typing import Sequence
+from uuid import UUID
 
 from fastapi import Depends
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.postgres import get_session
 from src.models.url_models import URL as URLModel
@@ -10,6 +12,7 @@ from src.schemas.url_schemas import URL as URLSchema, URLCreate
 from src.schemas.url_schemas import URLCashTimestamp, URLCreateFull
 from src.services.postgres_service import PostgresService
 from src.services.redis_service import RedisCacheService, get_redis_service
+from src.core.exeptions import InvalidFieldException
 
 
 class URLService():
@@ -32,10 +35,13 @@ class URLService():
         schema = URLCreateFull(
             original_url=model_schema.original_url, short_url=short_url,
         )
-        db_model: URLModel = await self.postgres_service.create(schema)
+        try:
+            db_model: URLModel = await self.postgres_service.create(schema)
+        except IntegrityError:
+            raise InvalidFieldException(schema.original_url)
         return db_model
 
-    async def get_model_by_id(self, model_id: str) -> URLModel:
+    async def get_model_by_id(self, model_id: UUID) -> URLModel:
 
         db_model: URLModel = await self.postgres_service.get_by_id(model_id)
 
@@ -50,7 +56,7 @@ class URLService():
 
         return db_models
 
-    async def get_model_by_short_url(self, short_url: str) -> URLModel:
+    async def get_model_by_short_url(self, short_url: str) -> str | None:
 
         db_model = await self.cache.get_from_cache(short_url)
 
@@ -67,7 +73,7 @@ class URLService():
 
         schema = self.model_schema_class.model_validate(db_model)
         await self._add_timestamp_to_queue(schema)
-        return db_model
+        return schema.original_url
 
     def _shorten_url(self, original_url: str) -> str:
         hash_object = hashlib.sha256(original_url.encode())
