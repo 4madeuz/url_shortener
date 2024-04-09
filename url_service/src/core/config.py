@@ -22,7 +22,7 @@ class Settings(BaseSettings):
                 scheme=self.scheme,
                 username=self.postgres_user,
                 password=self.postgres_password,
-                host='localhost',
+                host=self.postgres_host,
                 port=self.postgres_port,
                 path=self.postgres_db,
             )

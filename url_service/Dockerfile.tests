@@ -14,5 +14,6 @@ RUN pip install --no-cache-dir --upgrade pip &&\
 
 COPY .  .
 
+RUN chmod +x ./test.entrypoint.sh
 
-CMD ["pytest", "tests.py"]
+ENTRYPOINT ["./test.entrypoint.sh"]

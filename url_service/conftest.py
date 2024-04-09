@@ -66,8 +66,8 @@ def test_client():
 @pytest_asyncio.fixture
 async def sample_url(async_session: AsyncSession) -> URL:
     url = URL(
-        original_url='original_url',
-        short_url='short_url',
+        original_url='https://github.com/4madeuz/url_shortener',
+        short_url='ebf82cbc',
         timestamps=[datetime.now(tz=None), datetime.now(tz=None)],
     )
     async_session.add(url)
